@@ -1,0 +1,20 @@
+{
+  "configurations": [
+    {
+      "name": "Linux",
+      "includePath": [
+        "${workspaceFolder}/torchOp/**",
+        "/usr/include/python3.8",
+        "/usr/local/cuda/include",
+        "/home/ben/miniconda3/envs/pytorch/lib/python3.10/site-packages/torch/include/**",
+        "/usr/local/cuda/samples/common/inc"
+      ],
+      "defines": [],
+      "compilerPath": "/usr/bin/clang",
+      "cStandard": "c17",
+      "cppStandard": "c++14",
+      "intelliSenseMode": "linux-clang-x64"
+    }
+  ],
+  "version": 4
+}

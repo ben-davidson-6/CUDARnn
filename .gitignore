@@ -1,0 +1,10 @@
+*.o
+*.ncu-rep
+random/
+outputs/
+Learn-CUDA-Programming/
+dataplay/
+cudaTutorial/
+torchOp/
+*.pyc
+rnnComparison/c/rnn
