@@ -15,8 +15,8 @@ def compare_rnn():
     N = 100
     rnn = torch.nn.RNN(input_size, hidden_size, bias=False)
     rnn.to("cuda")
-    rnn_input = torch.rand(
-        (sequence_len, batch_size, input_size), dtype=torch.float32, device="cuda"
+    rnn_input = torch.randn(
+        (sequence_len, batch_size, input_size), device="cuda", dtype=torch.float32
     )
     total_time = 0.0
     for _ in range(N):
@@ -30,9 +30,7 @@ def compare_rnn():
     total_time_mine = 0.0
     for _ in range(N):
         start = perf_counter()
-        our_out = ben_rnn.ben_rnn(
-            rnn_input, input_weight, hidden_weight
-        )
+        our_out = ben_rnn.ben_rnn(rnn_input, input_weight, hidden_weight)[0]
         torch.cuda.synchronize()
         total_time_mine += perf_counter() - start
 

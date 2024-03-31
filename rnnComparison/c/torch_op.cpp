@@ -27,9 +27,9 @@ std::vector<torch::Tensor> ben_rnn(
         auto input_ptr = input.data_ptr<float>();
         auto input_weight_ptr = input_weight.data_ptr<float>();
         auto hidden_weight_ptr = hidden_weight.data_ptr<float>();
-        auto tmp_inputs = torch::empty({input.size(1), hidden_weight.size(1)}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
+        auto tmp_inputs = torch::zeros({input.size(1), hidden_weight.size(1)}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
         auto tmp_h = torch::zeros({input.size(1), hidden_weight.size(1)}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
-        auto output = torch::empty({input.size(0), input.size(1), hidden_weight.size(1)}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
+        auto output = torch::zeros({input.size(0), input.size(1), hidden_weight.size(1)}, torch::TensorOptions().dtype(torch::kFloat32).device(torch::kCUDA));
         rnn_forward(
           input_ptr, 
           input_weight_ptr, 
@@ -37,8 +37,8 @@ std::vector<torch::Tensor> ben_rnn(
           tmp_inputs.data_ptr<float>(), 
           tmp_h.data_ptr<float>(), 
           output.data_ptr<float>(), 
-          input.size(0), 
           input.size(1), 
+          input.size(0), 
           input_weight.size(0), 
           hidden_weight.size(0));
         return std::vector<torch::Tensor>{output};
