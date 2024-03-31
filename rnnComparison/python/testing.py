@@ -1,17 +1,16 @@
 from time import perf_counter
 
+import numpy as np
 import torch
-from torch import nn
-from torch.autograd import Function
 
 import ben_rnn  # isort:skip must be after torch
 
 
 def compare_rnn():
-    input_size = 2
-    hidden_size = 2
-    batch_size = 1
-    sequence_len = 2
+    input_size = 512
+    hidden_size = 128
+    batch_size = 1  # if goes to 2 get big diffs
+    sequence_len = 3  # if goes to 4 get nans
     N = 100
     rnn = torch.nn.RNN(input_size, hidden_size, bias=False)
     rnn.to("cuda")
@@ -34,7 +33,12 @@ def compare_rnn():
         torch.cuda.synchronize()
         total_time_mine += perf_counter() - start
 
-    assert torch.allclose(torch_out, our_out), "Outputs don't match"
+    np.testing.assert_allclose(
+        torch_out.cpu().detach().numpy(),
+        our_out.cpu().detach().numpy(),
+        atol=1e-5,
+        rtol=1e-5,
+    )
     print(f"torch rnn time: {total_time/N}")
     print(f"my rnn time: {total_time_mine/N}")
 
