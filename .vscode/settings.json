@@ -2,6 +2,8 @@
   "files.associations": {
     "vector": "cpp",
     "chrono": "cpp",
-    "cmath": "cpp"
-  }
+    "cmath": "cpp",
+    "variant": "cpp"
+  },
+  "cmake.configureOnOpen": false
 }
