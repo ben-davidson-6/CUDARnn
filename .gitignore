@@ -8,3 +8,7 @@ cudaTutorial/
 torchOp/
 *.pyc
 rnnComparison/c/rnn
+*.egg-info
+*.egg
+*.so
+PKG-INFO
