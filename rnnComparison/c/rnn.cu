@@ -107,15 +107,17 @@ void rnn_forward(
     int input_offset = seq_index * batch_size * input_size;
     int hidden_offset = seq_index * batch_size * hidden_size;
     cublasSetStream(handle, input_stream);
-    cublasSgemmStridedBatched(
+    // input_size [input_size, batch, sequence_len]
+    // input_weight [hidden_size, input_size]
+    cublasSgemm(
         handle, CUBLAS_OP_N, CUBLAS_OP_N,
-        hidden_size, sequence_len, input_size,
+        hidden_size, batch_size, input_size,
         &alpha,
-        input_weight, hidden_size, 0,
-        inputs + input_offset, input_size, batch_size * input_size,
+        input_weight, hidden_size,
+        inputs + input_offset, input_size,
         &beta,
-        tmp_inputs + hidden_offset, hidden_size, batch_size * hidden_size,
-        max_sequence);
+        tmp_inputs, hidden_size);
+    cudaDeviceSynchronize();
 
     // event triggers only when work currently scheduled on input stream done
     // because of this think you need an event for every possible batch
@@ -135,15 +137,17 @@ void rnn_forward(
         &beta,
         tmp_h, hidden_size);
     }
+    cudaDeviceSynchronize();
     int numElements = batch_size*hidden_size;
     blockDim.x = 32;
     gridDim.x = (numElements + blockDim.x - 1) / blockDim.x;
     tanhh<<<gridDim, blockDim, 0, hidden_stream>>>(
-      tmp_inputs + hidden_offset, 
+      tmp_inputs, 
       tmp_h, 
       output + hidden_offset,
       hidden_size, 
       batch_size);
+    cudaDeviceSynchronize();
     cudaCheckErrors("sgem");
   }
 }
