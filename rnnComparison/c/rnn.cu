@@ -51,18 +51,14 @@ __global__ void tanhh(
   float *tmp_h, 
   float *out, 
   int hidden_dim, 
-  int batch_size, 
-  int sequence_index)
+  int batch_size)
 {
-  int offset = hidden_dim*batch_size;
-  int sequence_start = sequence_index*offset;
-  int sequence_end = sequence_start + offset;
   int index = threadIdx.x + blockIdx.x * blockDim.x;
-  int global_index = index + sequence_start;
-  if (global_index >= sequence_end){
+  int num_elements = hidden_dim * batch_size;
+  if (index >= num_elements){
     return;
   }
-  out[global_index] = tanh(tmp_h[index] + tmp_inputs[global_index]);
+  out[index] = tanh(tmp_h[index] + tmp_inputs[index]);
 }
 
 void rnn_forward(
@@ -143,12 +139,11 @@ void rnn_forward(
     blockDim.x = 32;
     gridDim.x = (numElements + blockDim.x - 1) / blockDim.x;
     tanhh<<<gridDim, blockDim, 0, hidden_stream>>>(
-      tmp_inputs, 
+      tmp_inputs + hidden_offset, 
       tmp_h, 
-      output,
+      output + hidden_offset,
       hidden_size, 
-      batch_size, 
-      seq_index);
+      batch_size);
     cudaCheckErrors("sgem");
   }
 }
