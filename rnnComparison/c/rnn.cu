@@ -116,8 +116,7 @@ void rnn_forward(
         input_weight, hidden_size,
         inputs + input_offset, input_size,
         &beta,
-        tmp_inputs, hidden_size);
-    cudaDeviceSynchronize();
+        tmp_inputs + hidden_offset, hidden_size);
 
     // event triggers only when work currently scheduled on input stream done
     // because of this think you need an event for every possible batch
@@ -135,19 +134,17 @@ void rnn_forward(
         hidden_weight, hidden_size,
         output + output_offset, hidden_size,
         &beta,
-        tmp_h, hidden_size);
+        tmp_h + hidden_offset, hidden_size);
     }
-    cudaDeviceSynchronize();
     int numElements = batch_size*hidden_size;
     blockDim.x = 32;
     gridDim.x = (numElements + blockDim.x - 1) / blockDim.x;
     tanhh<<<gridDim, blockDim, 0, hidden_stream>>>(
-      tmp_inputs, 
-      tmp_h, 
+      tmp_inputs + hidden_offset, 
+      tmp_h + hidden_offset, 
       output + hidden_offset,
       hidden_size, 
       batch_size);
-    cudaDeviceSynchronize();
     cudaCheckErrors("sgem");
   }
 }
