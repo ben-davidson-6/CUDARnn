@@ -67,5 +67,4 @@ def test_with_many_values() -> None:
 
 
 if __name__ == "__main__":
-    # test_with_many_values()
-    compare_rnn(1, 39, 75, 18, 1)
+    compare_rnn(64, 128, 32, 128)
